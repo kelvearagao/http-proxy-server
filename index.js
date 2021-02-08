@@ -7,7 +7,7 @@ const pathPatterns = require("./config/pathPatterns");
 
 app.use(cors());
 
-console.log(pathPatterns);
+//console.log(pathPatterns);
 
 Object.keys(pathPatterns).map((key) => {
   app.use(key, function (req, res, next) {
@@ -39,18 +39,28 @@ Object.keys(pathPatterns).map((key) => {
       console.log(LOG.REQ_PATTERN_REDIRECT);
     }
 
+    console.log(req.headers);
+
     axios({
       method: req.method,
       url: toUrl,
       headers: {
-        ...config.headers,
+        ...req.headers,
+        host: null,
+        //...config.headers,
       },
       data: {
         data: req.body,
       },
     })
       .then((result) => {
-        //console.log(chalk.green(LOG.REQ_PATTERN_REDIRECT));
+        console.log(
+          chalk.green(
+            result.status,
+            result.statusText,
+            JSON.stringify(result.data)
+          )
+        );
 
         res.format({
           [config.responseFormat]: function () {
@@ -60,8 +70,11 @@ Object.keys(pathPatterns).map((key) => {
         //console.log('==>', result.data)
       })
       .catch((err) => {
-        console.log("err", err);
-        //console.log(chalk.red(LOG.REQ_PATTERN_REDIRECT));
+        console.log(chalk.red(err));
+
+        if (err.response) {
+          console.log(chalk.red("Data", JSON.stringify(err.response.data)));
+        }
 
         if ((config.response || {}).data) {
           return res.send(config.response.data);
