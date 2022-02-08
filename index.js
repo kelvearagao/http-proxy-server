@@ -3,9 +3,11 @@ const chalk = require("chalk");
 const app = express();
 const axios = require("axios");
 const cors = require("cors");
+const bodyParser = require('body-parser')
 const pathPatterns = require("./config/pathPatterns");
 
 app.use(cors());
+app.use(bodyParser.json())
 
 //console.log(pathPatterns);
 
@@ -29,45 +31,72 @@ Object.keys(pathPatterns).map((key) => {
     }
 
     if ((config.response || {}).data) {
-      console.log(chalk.yellow(LOG.REQ_PATTERN_REDIRECT));
+      console.log(chalk.yellow('[MOCK]', LOG.REQ_PATTERN_REDIRECT));
       setTimeout(() => {
         res.status(config.response.status || 200).send(config.response.data);
-      }, 5000);
+      }, 1000);
 
       return;
     } else {
-      console.log(LOG.REQ_PATTERN_REDIRECT);
+      console.log('[PROXY]', LOG.REQ_PATTERN_REDIRECT);
     }
 
-    console.log(req.headers);
+    //console.log(req.headers);
+    //console.log(config.headers);
+   
+    let newHeaders = {
+      ...req.headers,
+      // connection: null,
+      // 'content-length': null,
+      host: null,
+      // 'accept-encoding': null,
+      // 'user-agent': null,
+      // referer: null,
+      // 'sec-ch-ua': null,
+      // 'sec-ch-ua-mobile': null,
+      // 'content-type': null,
+      // accept: null,
+      // 'sec-ch-ua-platform': null,
+      origin: null,
+      // 'sec-fetch-site': null,
+      // 'sec-fetch-mode': null,
+      // 'sec-fetch-dest': null,
+      // 'accept-language': null,
+      ...config.headers,
+    }
+
+    newHeaders = (Object.keys(newHeaders).reduce((acc, key) => {
+      if (newHeaders[key] !== null) {
+        acc[key] = newHeaders[key]
+      }
+
+      return acc
+    }, {}))
+
+    //console.log('new ', newHeaders)
 
     axios({
       method: req.method,
       url: toUrl,
       headers: {
-        ...req.headers,
-        host: null,
-        //...config.headers,
+        ...newHeaders
       },
-      data: {
-        data: req.body,
-      },
+      data: req.body
     })
       .then((result) => {
-        console.log(
-          chalk.green(
-            result.status,
-            result.statusText,
-            JSON.stringify(result.data)
-          )
-        );
+        // console.log(
+        //   chalk.green(
+        //     result.status,
+        //     result.statusText,
+        //     JSON.stringify(result.data)
+        //   )
+        // );
 
         res.format({
           [config.responseFormat]: function () {
             res.send(result.data);
           },
         });
-        //console.log('==>', result.data)
       })
       .catch((err) => {
         console.log(chalk.red(err));
