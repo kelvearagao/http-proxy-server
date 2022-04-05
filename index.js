@@ -109,10 +109,13 @@ Object.keys(pathPatterns).map((key) => {
         // });
       })
       .catch((err) => {
-        console.log('[REQUEST ERROR]', chalk.red(err));
-
+        console.log(chalk.red('[RESPONSE ERROR]', LOG.REQ_PATTERN_REDIRECT));
+        console.log(config.pathPatternReplace);
+        
         if (err.response) {
-          console.log(chalk.red("Data", JSON.stringify(err.response.data)));
+          console.log(chalk.gray("Data", JSON.stringify(err.response.data), err.response.status));
+        } else {
+          console.log(chalk.gray(err));
         }
 
         if ((config.response || {}).data) {
