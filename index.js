@@ -7,7 +7,7 @@ const bodyParser = require('body-parser')
 const pathPatterns = require("./config/pathPatterns");
 
 app.use(cors());
-app.use(bodyParser.json())
+app.use(bodyParser.json({ strict: false }))
 
 //console.log(pathPatterns);
 
@@ -81,33 +81,48 @@ Object.keys(pathPatterns).map((key) => {
       headers: {
         ...newHeaders
       },
-      data: req.body
+      data: isNaN(req.body) ? req.body : (req.body||'').toString()
     })
       .then((result) => {
-        // console.log(
-        //   chalk.green(
-        //     result.status,
-        //     result.statusText,
-        //     JSON.stringify(result.data)
-        //   )
-        // );
-
-        res.format({
-          [config.responseFormat]: function () {
-            res.send(result.data);
-          },
-        });
+        if (config.showLog.successResponse) {
+          console.log(
+            chalk.green(
+              '[RESPONSE]', 
+              LOG.REQ_PATTERN_REDIRECT,
+              result.status,
+              result.statusText,
+            )
+          );
+          console.log(
+            chalk.gray(
+              JSON.stringify(result.data)
+            )
+          )
+        }
+        
+        return res.status(result.status).send(result.data);
+        
+        // res.format({
+        //   [config.responseFormat]: function () {
+        //     res.status(result.status).send(result.data);
+        //   },
+        // });
       })
       .catch((err) => {
-        console.log(chalk.red(err));
+        console.log('[REQUEST ERROR]', chalk.red(err));
 
         if (err.response) {
           console.log(chalk.red("Data", JSON.stringify(err.response.data)));
         }
 
         if ((config.response || {}).data) {
-          return res.send(config.response.data);
+          return res.status((config.response ||{}).status).send(config.response.data);
         }
+
+        if ((err.response||{}).status) {
+          return res.status((err.response||{}).status).send(err.response.data);
+        }
+
         return res.status(200).end();
       });
   });
