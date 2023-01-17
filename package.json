@@ -1,10 +1,12 @@
 {
   "name": "@kelvearagao/http-proxy-server",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "main": "lib/index.js",
   "scripts": {
     "start": "nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "requirements-check": "node check-version.js",
+    "postinstall": "npm run requirements-check"
   },
   "keywords": [],
   "author": "Kelve Aragão",
@@ -17,6 +19,7 @@
     "express": "^4.17.1",
     "lowdb": "^1.0.0",
     "node-json-db": "^1.5.0",
+    "semver": "^7.3.8",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
