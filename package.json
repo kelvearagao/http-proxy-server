@@ -1,14 +1,13 @@
 {
-  "name": "mock-server",
+  "name": "@kelvearagao/http-proxy-server",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
     "start": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
+  "author": "Kelve Aragão",
   "license": "ISC",
   "dependencies": {
     "axios": "^0.20.0",
@@ -22,5 +21,20 @@
   },
   "devDependencies": {
     "nodemon": "^2.0.4"
+  },
+  "directories": {
+    "lib": "lib"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kelvearagao/http-proxy-server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/kelvearagao/http-proxy-server/issues"
+  },
+  "homepage": "https://github.com/kelvearagao/http-proxy-server#readme",
+  "description": "",
+  "engines": {
+    "node": ">=14"
   }
 }
